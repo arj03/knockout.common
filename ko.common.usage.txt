@@ -1,0 +1,72 @@
+Datepicker Usage:
+
+== JS ==
+
+Remember time must be in unix format
+
+var viewModel = {
+    myDate: ko.observable(1000000)
+};
+
+ko.applyBindings(viewModel);
+
+== HTML ==
+
+<input data-bind="datepicker: myDate" />
+
+<input data-bind="datepicker: myDate, datepickerOptions: {firstDay: 1, dateFormat: 'dd/mm/yy'}" />
+
+PaginatedViewModel Usage:
+
+== JS ==
+
+function requestExportedLines(curPageIndex, pageSize, curPageIndexObservable) {
+    var filterDates = getFilterDates();
+    callbackUrl("Default.aspx", "GetExportedCSV", $.toJSON({ pageIndex: curPageIndex, pageSize: pageSize, type: type, 
+							     fileFilter: $("#exportedFileFilter").val(), 
+                                                             companyFilter: filteredCompany(), from: filterDates[0], to: filterDates[1] }),
+                function (d) {
+		    if (curPageIndex != curPageIndexObservable())
+			return;
+
+                    var data = $.parseJSON(d.d);
+                    exportedViewModel.nrElements(data.nrRows);
+                    ko.mapping.fromJS(data.rows, exportedViewModel.elements);
+                }, function () { showMessage("failed to get exported lines"); });
+}
+
+var exportedViewModel = paginatedViewModel(requestExportedLines);
+
+...
+
+ko.applyBindings(exportedViewModel, $("#exportedDiv")[0]);
+exportedViewModel.requestData();
+
+== HTML ==
+
+    <div id="exportedDiv">
+        <h3>Last export check and exported CSV files</h3>
+
+        <table class="simple">
+            <tr>
+                <th>Time</th>
+                <th>File <select id="exportedFileFilter"><option value="">All</option><option value="file">Only files</option></select></th>
+                <th>Company</th>
+            </tr>
+            <tbody data-bind="foreach: exportedViewModel.elements">
+                <tr>
+                    <td data-bind="text: datetimeStr"></td>
+                    <td><a data-bind="attr: { href: href, title: filename }"><div data-bind="text: filename"></div></a></td>
+                    <td data-bind="text: company"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div>
+            <span style="min-width: 145px; min-height: 14px; display:inline-block; float: left;"><input type="button" style="margin-right: 5px;" class="btn" data-bind="click: exportedViewModel.previousPage, visible: exportedViewModel.pageIndex() > 0" value="Previous page" /></span>
+            <input type="button" class="btn" data-bind="click: exportedViewModel.nextPage, visible: exportedViewModel.pageIndex() < exportedViewModel.maxPageIndex()" value="Next page" />
+        </div>
+
+        <div style="clear: both"><br /></div>
+    </div>
+
