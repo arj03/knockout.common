@@ -31,6 +31,10 @@ ko.bindingHandlers.datepicker = {
     }
 };
 
+ko.observableArray['fn']["pushArray"] = function(arrayOfValues) {
+    this.push.apply(this, arrayOfValues);
+}
+
 // paginated view model abstraction
 //
 // takes a function to be called on next/prev page. This function
