@@ -70,7 +70,8 @@ function paginatedViewModel(requestDataFunc) {
         }, self);
 
 	self.requestData = function() {
+            self.pageIndex(0);
             requestDataFunc(self.pageIndex(), self.pageSize(), self.pageIndex);
 	};
-    } ();
+    }();
 }
