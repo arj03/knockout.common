@@ -30,7 +30,7 @@ A simple view model that abstracts the knockout code of pagination.
     
                         var data = $.parseJSON(d.d);
                         exportedViewModel.nrElements(data.nrRows);
-                        ko.mapping.fromJS(data.rows, exportedViewModel.elements);
+                        ko.wrap.fromJS(exportedViewModel.elements, data.rows);
                     }, function () { showMessage("failed to get exported data files"); });
     }
     
